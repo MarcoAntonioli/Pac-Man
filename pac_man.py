@@ -150,4 +150,4 @@ def play():
 	pygame.quit()
 play()
 
-# 224 x 288, so dividing each value by eight yields a grid that is 28 x 36 
+
