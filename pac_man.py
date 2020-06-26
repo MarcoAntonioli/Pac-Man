@@ -86,21 +86,28 @@ def movement(event,x_update,y_update,direction):
 
 
 def tunnel(x,y):
-	if x == 27 * dimension and y == 14 * dimension:
+	if x == 26 * dimension and y == 14 * dimension:
 		x = dimension 
-	elif x == 0 and y == 14 * dimension:
+	elif x == dimension and y == 14 * dimension:
 		x = 26 * dimension
 	return x, y
 
 def stop(x,y,x_update,y_update,direction):
 	for i in range(len(map_)):
 		for j in range(len(map_[i])):
-			if not (i == 14 * dimension and j == 0) or (i == 14 * dimension and j == 27 * dimension):
-				if map_[i][j] == 0:
-					if x == j * dimension and y == i * dimension:
-						x_update, y_update = 0,0				 
-
-	# stop function depending on the direction to be implemented
+			if not (i == 14 * dimension and j == dimension) or (i == 14 * dimension and j == 26 * dimension):
+				if map_[i][j] == 0 and direction == 'up':
+					if x == j * dimension and y == (i+1) * dimension:
+						y_update = 0
+				elif map_[i][j] == 0 and direction == 'left':
+					if x == (j+1) * dimension and y == i * dimension:
+						x_update = 0
+				elif map_[i][j] == 0 and direction == 'down':
+					if x == j * dimension and y == (i-1) * dimension:
+						y_update = 0
+				elif map_[i][j] == 0 and direction == 'right':
+					if x == (j-1) * dimension and y == i * dimension:
+						x_update = 0
 	return x_update, y_update
 
 def play():
@@ -111,7 +118,6 @@ def play():
 	x, y = 14*dimension, 17*dimension
 	x_update, y_update = 0,0
 	direction = None
-
 
 
 
@@ -132,8 +138,6 @@ def play():
 		pacman(screen,x,y)
 		ghosts(screen)
 		
-
-
 
 
 
