@@ -1,5 +1,5 @@
 import pygame
-from random import randint 
+#from random import randint 
 
 mul = 2
 width = 8 * 28 * mul
@@ -48,12 +48,12 @@ map_ = [
 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],		#31	
 ]
 
-def grid(screen,widht,height):
-	screen.fill(background)
+def grid(surface,widht,height):
+	surface.fill(background)
 	for i in range(len(map_)):
 		for j in range(len(map_[i])):
 			if not map_[i][j]:
-				pygame.draw.rect(screen,blue,[j*dimension+1,i*dimension+1,dimension-1,dimension-1])
+				pygame.draw.rect(surface,blue,[j*dimension+1,i*dimension+1,dimension-1,dimension-1])
 
 def pacman(surface,x,y):
 	pygame.draw.rect(surface,yellow,[x,y,dimension+1,dimension+1])
@@ -63,6 +63,7 @@ def ghosts(surface):
 	pygame.draw.rect(surface,brilliant_levender,[13*dimension,14*dimension,dimension+1,dimension+1])
 	pygame.draw.rect(surface,acqua,[14*dimension,14*dimension,dimension+1,dimension+1])
 	pygame.draw.rect(surface,pastel_orange,[15*dimension,14*dimension,dimension+1,dimension+1])
+	#to be implemented
 
 def movement(event,x_update,y_update,direction):							
 	if event.type == pygame.KEYDOWN:
@@ -85,6 +86,34 @@ def movement(event,x_update,y_update,direction):
 	return x_update, y_update, direction	
 
 
+# def command(event,direction):
+# 	if event.type == pygame.KEYDOWN:
+# 		if event.key == pygame.K_LEFT:
+# 			direction = 'left'
+# 		elif event.key == pygame.K_RIGHT:
+# 			direction = 'right'
+# 		elif event.key == pygame.K_UP:
+# 			direction = 'up'
+# 		elif event.key == pygame.K_DOWN:
+# 			direction = 'down'
+# 	return direction	
+
+# def movement(x_update,y_update,direction):
+# 	if direction == 'up':
+# 		x_update = 0
+# 		y_update = -dimension//2
+# 	if direction == 'down':
+# 		x_update = 0
+# 		y_update = dimension//2
+# 	if direction == 'left':
+# 		x_update = -dimension//2
+# 		y_update = 0
+# 	if direction == 'right':
+# 		x_update = dimension//2
+# 		y_update = 0	
+# 	return x_update,y_update	
+
+
 def tunnel(x,y,screen):
 	if x == 26 * dimension and y == 14 * dimension:
 		x = dimension 
@@ -95,30 +124,51 @@ def tunnel(x,y,screen):
 	return x, y
 
 def stop(x,y,x_update,y_update,direction):
+#def stop(x,y,x_update,y_update,direction,directions):
 	for i in range(len(map_)):
 		for j in range(len(map_[i])):
 			if not (i == 14 * dimension and j == dimension) or (i == 14 * dimension and j == 26 * dimension):
+
 				if map_[i][j] == 0 and direction == 'up':
-					# if x == j * dimension and y == (i+1) * dimension:
-					# 	y_update = 0
 					if ((0 <= x - j * dimension < dimension) or (0 < (x + dimension) - j * dimension < dimension)) and (y == (i+1) * dimension):
 						y_update = 0
+						# if directions[0] == 'right':
+						# 	x_update = dimension//2
+						# 	direction = 'right'
+						# if directions[0] == 'left':
+						# 	x_update = -dimension//2
+						# 	direction ='left'
+
 				elif map_[i][j] == 0 and direction == 'left':
-					# if x == (j+1) * dimension and y == i * dimension:
-					# 	x_update = 0
 					if x == (j+1) * dimension and ((0 <= y - i * dimension < dimension) or (0 < (y + dimension) - i * dimension < dimension)):
 						x_update = 0
+						# if directions[0] == 'up':
+						# 	y_update = -dimension//2
+						# 	direction = 'up'
+						# elif directions[0] == 'down':
+						# 	y_update = dimension//2
+						# 	direction = 'down'
+
 				elif map_[i][j] == 0 and direction == 'down':
-					# if x == j * dimension and y == (i-1) * dimension:
-					# 	y_update = 0
 					if ((0 <= x - j * dimension < dimension) or (0 < (x + dimension) - j * dimension < dimension)) and (y == (i-1) * dimension):
 						y_update = 0
+						# if directions[0] == 'right':
+						# 	x_update = dimension//2
+						# 	direction = 'right'
+						# elif directions[0]== 'left':
+						# 	x_update = -dimension//2
+						# 	direction = 'left'
+
 				elif map_[i][j] == 0 and direction == 'right':
-					# if x == (j-1) * dimension and y == i * dimension:
-					# 	x_update = 0
 					if (x == (j-1) * dimension) and ((0 <= y - i * dimension < dimension) or (0 < (y + dimension) - i * dimension < dimension)):
 						x_update = 0
-	return x_update, y_update
+						# if directions[0] == 'up':
+						# 	y_update = -dimension//2
+						# 	direction = 'up'
+						# elif directions[0] == 'down':
+						# 	y_update = dimension//2
+						# 	direction = 'down'
+	return x_update, y_update, direction
 
 def play():
 	pygame.init()
@@ -128,24 +178,21 @@ def play():
 	x, y = 14*dimension, 17*dimension
 	x_update, y_update = 0,0
 	direction = None
-
-	'''
-	x_ghost1, y_ghost1 = 0,0
-	x_ghost2, y_ghost2 = 0,0
-	x_ghost3, y_ghost3 = 0,0
-	x_ghost4, y_ghost4 = 0,0
-	'''
+	directions = []
 
 
 	running = True
 	while running:
 		for event in pygame.event.get():
-			if event. type == pygame.QUIT:
+			if event.type == pygame.QUIT:
 				running = False
+			# direction = command(event,direction)
+			# x_update, y_update = movement(x_update,y_update,direction)
 			x_update, y_update, direction = movement(event,x_update,y_update,direction)
+		# directions.append(direction)
 		# if len(directions) > 2:
-		# 	del directions[0]
-		x_update, y_update = stop(x,y,x_update,y_update,direction)
+		#  	del directions[0]
+		x_update, y_update, direction = stop(x,y,x_update,y_update,direction)
 		x += x_update
 		y += y_update
 		grid(screen,width,height)
