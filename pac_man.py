@@ -2,7 +2,7 @@ import pygame
 from random import randint 
 
 mul = 2
-width = 8 * 28 * mul											#standard Pac-Man dimensions 
+width = 8 * 28 * mul
 height = 8 * 31 * mul
 dimension = 8 * mul
 background = (0,0,0)
@@ -67,29 +67,31 @@ def ghosts(surface):
 def movement(event,x_update,y_update,direction):							
 	if event.type == pygame.KEYDOWN:
 		if event.key == pygame.K_LEFT:
-			x_update = -dimension
+			x_update = -dimension//2
 			y_update = 0
 			direction = 'left'
 		elif event.key == pygame.K_RIGHT:
-			x_update = dimension
+			x_update = dimension//2
 			y_update = 0
 			direction = 'right'
 		elif event.key == pygame.K_UP:
 			x_update = 0
-			y_update = -dimension
+			y_update = -dimension//2
 			direction = 'up'
 		elif event.key == pygame.K_DOWN:
 			x_update = 0
-			y_update = dimension
+			y_update = dimension//2
 			direction = 'down'
 	return x_update, y_update, direction	
 
 
-def tunnel(x,y):
+def tunnel(x,y,screen):
 	if x == 26 * dimension and y == 14 * dimension:
 		x = dimension 
+		pygame.draw.rect(screen,yellow,[26*dimension,14*dimension,dimension+1,dimension+1])
 	elif x == dimension and y == 14 * dimension:
 		x = 26 * dimension
+		pygame.draw.rect(screen,yellow,[dimension,14*dimension,dimension+1,dimension+1])
 	return x, y
 
 def stop(x,y,x_update,y_update,direction):
@@ -97,16 +99,24 @@ def stop(x,y,x_update,y_update,direction):
 		for j in range(len(map_[i])):
 			if not (i == 14 * dimension and j == dimension) or (i == 14 * dimension and j == 26 * dimension):
 				if map_[i][j] == 0 and direction == 'up':
-					if x == j * dimension and y == (i+1) * dimension:
+					# if x == j * dimension and y == (i+1) * dimension:
+					# 	y_update = 0
+					if ((0 <= x - j * dimension < dimension) or (0 < (x + dimension) - j * dimension < dimension)) and (y == (i+1) * dimension):
 						y_update = 0
 				elif map_[i][j] == 0 and direction == 'left':
-					if x == (j+1) * dimension and y == i * dimension:
+					# if x == (j+1) * dimension and y == i * dimension:
+					# 	x_update = 0
+					if x == (j+1) * dimension and ((0 <= y - i * dimension < dimension) or (0 < (y + dimension) - i * dimension < dimension)):
 						x_update = 0
 				elif map_[i][j] == 0 and direction == 'down':
-					if x == j * dimension and y == (i-1) * dimension:
+					# if x == j * dimension and y == (i-1) * dimension:
+					# 	y_update = 0
+					if ((0 <= x - j * dimension < dimension) or (0 < (x + dimension) - j * dimension < dimension)) and (y == (i-1) * dimension):
 						y_update = 0
 				elif map_[i][j] == 0 and direction == 'right':
-					if x == (j-1) * dimension and y == i * dimension:
+					# if x == (j-1) * dimension and y == i * dimension:
+					# 	x_update = 0
+					if (x == (j-1) * dimension) and ((0 <= y - i * dimension < dimension) or (0 < (y + dimension) - i * dimension < dimension)):
 						x_update = 0
 	return x_update, y_update
 
@@ -119,8 +129,12 @@ def play():
 	x_update, y_update = 0,0
 	direction = None
 
-
-
+	'''
+	x_ghost1, y_ghost1 = 0,0
+	x_ghost2, y_ghost2 = 0,0
+	x_ghost3, y_ghost3 = 0,0
+	x_ghost4, y_ghost4 = 0,0
+	'''
 
 
 	running = True
@@ -129,25 +143,36 @@ def play():
 			if event. type == pygame.QUIT:
 				running = False
 			x_update, y_update, direction = movement(event,x_update,y_update,direction)
+		# if len(directions) > 2:
+		# 	del directions[0]
 		x_update, y_update = stop(x,y,x_update,y_update,direction)
 		x += x_update
 		y += y_update
 		grid(screen,width,height)
-		x, y = tunnel(x,y)
+		x, y = tunnel(x,y,screen)
 		
 		pacman(screen,x,y)
 		ghosts(screen)
 		
 
 
-
-
-
-
 		pygame.display.update()
-		clock.tick(5)
+		clock.tick(15)
 
 	pygame.quit()
 play()
 
-
+'''
+    Ghost — The Ghost class contains the different behaviour that the different ghosts have in the Pac-Man game. 
+    		There are three distinct modes a ghost can be in: chase, scatter and frightened.
+    ChaseBehaviour — The ChaseBehaviour interface is used to define different ghostly behaviours during the chase mode of the Pac-Man game.
+    				 In chase mode, the ghosts will have different behaviours associated with their personalities.
+    ChaseAggressive — The ChaseAggressive class contains the behaviour of a ghost in the Pac-Man game. 
+    				  In chase mode, the ghost chases aggressively and will usually take the shortest route to you, and tends to follow.
+    ChaseAmbush — The ChaseAmbush class contains the behaviour of a ghost in the Pac-Man game. 
+    			  In chase mode, the ghost will attempt to ambush Pac-Man. The ghost tends to take a more wounding way towards Pac-Man with deadly effect.
+    ChasePatrol — The ChasePatrol class contains the behaviour of a ghost in the Pac-Man game. 
+    			  In chase mode, the ghost patrols around his designated block by default, only chasing Pac-Man if he comes near enough.
+    ChaseRandom — The ChaseRandom class contains the behaviour of a ghost in the Pac-Man game. 
+    			  In chase mode, the ghost will move in a random manner around the board and is not much of a threat.
+'''
